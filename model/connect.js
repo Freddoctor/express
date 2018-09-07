@@ -36,6 +36,7 @@ function spread(conn) {
 
 function accepTo(ch, q) {
   let options = {};
+  
   //"durable": true, "arguments": {  "x-message-ttl": 10000,"x-max-length": 1000 }
   ch.consume(q, (msg) => {
     console.log(msg.content.toString())
