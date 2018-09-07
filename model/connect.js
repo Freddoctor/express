@@ -46,6 +46,8 @@ function accepTo(ch, q) {
   }, options);
 }
 
+// DEBUG:  监听监听
+
 http.listen(3000, function() {
   console.log('listening on *:3000'); //io接口
 });
