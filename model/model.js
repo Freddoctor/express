@@ -23,18 +23,8 @@ app.post('/model/setting', function(req, res, next) {
       data: {info: "成功"}
     });
   } else {
-    next();
+    res.redirect("/home");
   }
 })
-
-app.use(function(req, res, next) {
-  console.log("發送成功");
-  next();
-});
-
-app.use(function(req, res) {
-  console.log("即將返回");
-  res.redirect("/home");
-});
 
 module.exports = app;

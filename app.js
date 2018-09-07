@@ -4,14 +4,13 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-
 // var sql = require("./model/sql");
 //路由
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 //请求接口
 var model = require('./model/model');
-// var connect = require('./model/connect');
+var connect = require('./model/connect');
 
 var app = express();
 app.disable('x-powered-by');
@@ -26,9 +25,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+
 app.use('/users', usersRouter);
+
 app.use(model);
-// app.use(connect);
+
+app.use(connect);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

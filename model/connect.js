@@ -4,7 +4,6 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-const $ = require("./methods");
 const amqp = require('amqplib');
 
 app.disable('x-powered-by');
@@ -18,12 +17,20 @@ const options = {
 };
 
 amqp.connect(options).then((conn) => {
-  spread(conn);
-})
+  try {
+    spread(conn);
+  } catch (e) {
+
+  }
+}).then(null,console.warn);
 
 function spread(conn) {
   conn.createChannel().then((ch) => {
-    accepTo(ch, "quotationQuene2");
+    try {
+      accepTo(ch, "quotationQuene2");
+    } catch (e) {
+
+    }
   })
 }
 
