@@ -34,6 +34,11 @@ function spread(conn) {
   })
 }
 
+process.on('uncaughtException', function (err) {
+  //打印出错误
+  console.log(err);
+});
+
 function accepTo(ch, q) {
   let options = {};
   //"durable": true, "arguments": {  "x-message-ttl": 10000,"x-max-length": 1000 }
