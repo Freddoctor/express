@@ -1,0 +1,74 @@
+<%- include layout %>
+<% if (title) { %>
+  <h1 class="h1"><%= title %></h1>
+<% } %>
+  <h5 class="h5">請填寫下列信息</h5>
+  <form class="login" action="/model/setting" method="post">
+    <input type="text" name="user" placeholder="用戶名" value="">
+    <input type="password" name="password" placeholder="密碼" value="">
+    <button type="submit">註冊</button>
+  </form>
+  <script src="javascripts/jquery.mini.js"></script>
+  <script>
+    $.extend({
+      setCookie: setCookie,
+      getCookie: getCookie,
+    });
+
+    var timer = new Date().getTime();
+    var userName = $("input[name='user']");
+    var passwordName = $("input[name='password']");
+
+    function setCookie(attr, value, exdays) {
+      var d = new Date();
+      var exdays = parseInt(exdays) || 30;
+      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+      var expires = "expires=" + d.toGMTString();
+      document.cookie = attr + "=" + value + "; " + expires;
+      return this;
+    }
+
+    function getCookie(attr) {
+      var arr, reg = new RegExp(attr + '=([^;]+)');
+      if (arr = document.cookie.match(reg)) {
+        return unescape(arr[1]);
+      } else {
+        return "";
+      }
+    }
+
+    var userURI = unescape($.getCookie("username"));
+    var passURI = unescape($.getCookie("password"));
+    userName.val(userURI);
+    passwordName.val(passURI);
+
+    setTimeout(function() {
+      $.getJSON("/model/list", {
+        code: timer
+      }).then(function(data) {
+        console.log(data)
+      })
+    }, 2000)
+
+    $('form').on('submit', function(e) {
+      var user = escape($("input[name='user']").val());
+      var password = escape($("input[name='password']").val())
+
+      if (!(user && password)) {
+        return false;
+      }
+
+      $.setCookie("username", user)
+      $.setCookie("password", password);
+
+      // $.post("/model/setting", $('form').serialize()).then(function(data) {
+      //   console.log(data)
+      //   if(data.code === 10000) {
+      //     location.href = '/home';
+      //   }
+      // });
+      //e.preventDefault();
+
+    })
+  </script>
+<%- include footer %>

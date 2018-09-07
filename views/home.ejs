@@ -1,0 +1,35 @@
+<%- include layout %>
+  <img src='images/down.png' alt=''>
+  <section class='box'>
+    <p class='placeholder'>测试数据</p>
+  </section>
+  <div class='form'>
+    <input type='text' id='m'>
+    <button type='button' name='button' id='btn'>点我</button>
+  </div>
+  <script src='javascripts/jquery.mini.js'></script>
+  <script src='https://cdn.bootcss.com/socket.io/2.1.1/socket.io.js'></script>
+  <script>
+    $(function() {
+      var socket = io('http://127.0.0.1:3000');
+
+      socket.on('chat message', function(data) {
+        if (data) {
+          $('p.placeholder').remove()
+        }
+        $('.box').append($('<p>' + data + '</p>'))
+      })
+
+      ///死循环传送
+      var str = "{'date':'2018-09-03 15:55:46','preClosePrice':'1.30494','lowPrice':'1.30485','highPrice':'1.30753','range':'0.00004','openPrice':'1.30745','rangePercent':'0.00%','compressQuotation':['1.30498','1.30745','1.30753','1.30485','1.30494','0.00004','0.00%','2018-09-03 15:55:46'],'tradePrice':'1.30498','statusCode':'n'}"
+
+      $('#btn').click(function() {
+        var _exit = new Date().getTime() + 30;
+        // while (new Date().getTime() < _exit) {
+        //   socket.emit('chat message', str);
+        // };
+      });
+    });
+  </script>
+
+  <%- include footer %>
