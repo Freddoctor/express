@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+// DEBUG: 报错预警
+var domain = require("domain").create();
 
 // var sql = require("./model/sql");
 //路由
@@ -46,5 +48,13 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+domain.on("error" ,(err)=>{
+  console.log(err)
+})
+
+domain.run(()=>{
+    console.log("启动中.....")
+})
 
 module.exports = app;
