@@ -36,7 +36,6 @@ function spread(conn) {
 
 function accepTo(ch, q) {
   let options = {};
-  
   //"durable": true, "arguments": {  "x-message-ttl": 10000,"x-max-length": 1000 }
   ch.consume(q, (msg) => {
     console.log(msg.content.toString())
@@ -46,8 +45,6 @@ function accepTo(ch, q) {
     }
   }, options);
 }
-
-// DEBUG:  监听监听
 
 http.listen(3000, function() {
   console.log('listening on *:3000'); //io接口
