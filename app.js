@@ -22,7 +22,9 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -49,12 +51,12 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-domain.on("error" ,(err)=>{
+domain.on("error", (err) => {
   console.log(err)
 })
 
-domain.run(()=>{
-    console.log("启动中.....")
+domain.run(() => {
+  console.log("server start .....")
 })
 
 module.exports = app;

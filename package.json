@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node-dev ./bin/www",
-	"quene": "node ./model/postMess.js"
+    "quene": "node ./model/postMess.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",

@@ -8,8 +8,6 @@ const io = require('socket.io')(http,{
   pingTimeout: 60000,
 });
 
-{ transports: ['websocket'] }
-
 const queue = "quotationQuene2";
 
 app.disable('x-powered-by');
@@ -62,7 +60,7 @@ async function connectRabbitMQ() {
 }
 
 http.listen(3000, function() {
-  console.log('listening on *:3000'); //io接口
+  console.log('socket.io listening on *:3000'); //io接口
 });
 
 connectRabbitMQ();
