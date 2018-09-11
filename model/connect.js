@@ -3,16 +3,15 @@ const express = require('express');
 const app = express();
 
 const http = require('http').Server(app);
-const io = require('socket.io')(http,{
+const io = require('socket.io')(http, {
   pingInterval: 25000,
   pingTimeout: 60000,
 });
-
 const queue = "quotationQuene2";
-
+const $ = require("./methods.js");
 app.disable('x-powered-by');
 
-var connection;
+let connection;
 // 连接RabbitMQ
 const options = {
   hostname: '115.159.200.179',
@@ -22,7 +21,7 @@ const options = {
   password: 'guest'
 };
 
- const info = {
+const info = {
   "durable": true,
   "auto_delete": false,
   "durable": true,
@@ -37,24 +36,26 @@ async function connectRabbitMQ() {
     connection = await amqp.connect(options);
     console.info("connect to RabbitMQ success");
     const channel = await connection.createChannel();
-    await channel.assertQueue(queue,info);
+    await channel.assertQueue(queue, info);
     await channel.consume(queue, async function(message) {
-      // console.log(message.content.toString());
       if (message !== null) {
-        io.emit('chat message', message.content.toString());
-        channel.ack(message);
+        await io.emit('chat message', message.content.toString());
+        await channel.ack(message);
       }
     });
     connection.on("error", function(err) {
-      console.log(err);
+      console.log("connection to RabbitMQ error !", err);
+      $.logger.debug(err);
       setTimeout(connectRabbitMQ, 10000);
     });
     connection.on("close", function() {
       console.error("connection to RabbitQM closed!");
+      $.logger.debug(err);
       setTimeout(connectRabbitMQ, 10000);
     });
   } catch (err) {
     console.error(err);
+    $.logger.debug(err);
     setTimeout(connectRabbitMQ, 10000);
   }
 }

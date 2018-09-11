@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node-dev ./bin/www",
+    "start": "node-dev --max_old_space_size=2048 ./bin/www ",
     "quene": "node ./model/postMess.js"
   },
   "dependencies": {
@@ -12,6 +12,7 @@
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
+    "log4js": "^3.0.5",
     "morgan": "~1.9.0"
   },
   "devDependencies": {

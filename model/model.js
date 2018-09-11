@@ -15,7 +15,7 @@ app.get('/model/list', function(req, res) {
 })
 
 app.post('/model/setting', function(req, res, next) {
-  $.logger.debug(req.body);
+  $.log.debug(req.body);
   if(!req.body.user && !req.body.password) return false;
   if (req.xhr) {
     res.send({
