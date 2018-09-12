@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node-dev --max_old_space_size=2048 ./bin/www ",
+    "start": "node-dev --max_old_space_size=2018 --trace_gc ./bin/www ",
     "quene": "node ./model/postMess.js"
   },
   "dependencies": {
