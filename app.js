@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 // DEBUG: 报错预警
 var domain = require("domain").create();
-
+var http = require('http');
 // var sql = require("./model/sql");
 //路由
 var indexRouter = require('./routes/index');
@@ -13,7 +13,7 @@ var usersRouter = require('./routes/users');
 //请求接口
 var model = require('./model/model');
 var publish = require('./model/publish');
-
+var log = require('./model/logger');
 var app = express();
 app.disable('x-powered-by');
 // view engine setup
@@ -55,7 +55,26 @@ domain.on("error", (err) => {
 })
 
 domain.run(() => {
-  console.log("server start .....")
+  ///console.log("server start .....")
 })
-
+// if (publish.cluster.isMaster) {
+//   for (let i = 0; i < publish.cpuNums; i++) {
+//     publish.cluster.fork();
+//   }
+//   log.info(`主进程 ${process.pid} 正在运行`);
+//   process.on('exit', (code) => {
+//     console.log(code);
+//   });
+// } else {
+  // publish.connectRabbitMQ();
+  // var port = normalizePort(process.env.PORT || '8888');
+  // app.set('port', port);
+  // var server = http.createServer(app);
+  // server.listen(port);
+  // publish.httpSocket.listen(3000, function() {
+  //   log.warn('socket.io listening on:3000'); //io接口
+  // });
+  // server.setTimeout(0)
+  // log.info(`工作进程 ${process.pid} 已启动`);
+//}
 module.exports = app;

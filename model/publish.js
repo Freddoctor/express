@@ -5,12 +5,16 @@ let app = express();
 let http = require('http').Server(app);
 let io = require('socket.io')(http);
 let $ = require("./methods.js");
-// require("v8").setFlagsFromString('--expose_gc');
-// global.gc = require("vm").runInNewContext('gc');
-// setInterval(()=>{
-//   global.gc();
-// },1000)
+
 app.disable('x-powered-by');
+
+let version = process.versions.node; // 10.0.0;
+var reg = /^(\d{1,})\.(\d{1,})\.(\d{1,})/;
+const cpuNums = require('os').cpus().length;
+var cluster = {};
+if (reg.exec(version) && RegExp.$1 >= 10) {
+  cluster = require('cluster');
+}
 
 let options = {
   hostname: '115.159.200.179',
@@ -87,11 +91,28 @@ function connectRabbitMQ() {
   }
 }
 
-connectRabbitMQ();
+const Pool = require('worker-threads-pool');
+const pool = new Pool({
+  max: 4
+})
+
+for(let i =1;i<=4;i++) {
+  pool.acquire(__filename, {}, function(worker) {
+    connectRabbitMQ();
+    worker.on('exit', function() {
+      console.log(`worker exited (pool size: ${pool.size})`)
+    })
+  })
+}
 
 http.listen(3000, function() {
-  console.log('socket.io listening on *:3000'); //io接口
+  console.info('socket.io listening on:3000'); //io接口
 });
+
+console.info(`工作进程 ${process.pid} 已启动`);
 
 module.exports = app;
 module.exports.connectRabbitMQ = connectRabbitMQ;
+module.exports.httpSocket = http;
+module.exports.cpuNums = cpuNums;
+module.exports.cluster = cluster;
