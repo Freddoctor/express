@@ -36,16 +36,30 @@ let info = {
 
 // Consumer
 function connectRabbitMQ() {
-  let bail = function(err) {
-    $.logger.debug(err);
-    // process.exit(1);
+
+  function on_open(err, ch) {
+    try {
+      if (err != null) {$.logger.debug(err)};
+      ch.assertQueue(queue, info);
+      ch.consume(queue, function(msg) {
+        if (msg !== null) {
+          io.emit('chat message', msg.content.toString());
+          ch.ack(msg);
+        }
+      });
+    } catch (e) {
+      $.logger.debug(e);
+    }
   }
-  let consumer = function(conn) {
-    let watchError = conn.on("error", function(err) {
+
+  function consumer(conn) {
+
+    conn.on("error", function(err) {
       console.log("connection to RabbitMQ error !");
       $.logger.debug(err);
     });
-    let watchClose = conn.on("close", function(err) {
+
+    conn.on("close", function(err) {
       console.log("connection to RabbitQM closed!");
       $.logger.debug(err);
       $.logger.debug(process.memoryUsage());
@@ -53,38 +67,20 @@ function connectRabbitMQ() {
         connectRabbitMQ();
       }, 10000)
     });
-    let on_open = function(err, ch) {
-      try {
-        if (err != null) bail(err);
-        ch.assertQueue(queue, info);
-        ch.consume(queue, function(msg) {
-          if (msg !== null) {
-            io.emit('chat message', msg.content.toString());
-            ch.ack(msg);
-            //  global.gc();
-          }
-        });
-      } catch (e) {
-        $.logger.debug(e);
-      }
-    }
 
     try {
-      let ok = conn.createChannel(on_open);
-      ok = null;
+      conn.createChannel(on_open);
     } catch (e) {
       $.logger.debug(e);
     }
-    watchError = null;
-    watchClose = null;
+
   }
 
   try {
     amqp.connect(options, function(err, conn) {
       if (err != null) bail(err);
       console.info("connect to RabbitMQ success");
-      let compulish = consumer(conn);
-      compulish = null;
+      consumer(conn);
     });
   } catch (e) {
     $.logger.debug(e);
