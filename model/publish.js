@@ -39,7 +39,9 @@ function connectRabbitMQ() {
 
   function on_open(err, ch) {
     try {
-      if (err != null) {$.logger.debug(err)};
+      if (err != null) {
+        $.logger.debug(err)
+      };
       ch.assertQueue(queue, info);
       ch.consume(queue, function(msg) {
         if (msg !== null) {
@@ -53,12 +55,10 @@ function connectRabbitMQ() {
   }
 
   function consumer(conn) {
-
     conn.on("error", function(err) {
       console.log("connection to RabbitMQ error !");
       $.logger.debug(err);
     });
-
     conn.on("close", function(err) {
       console.log("connection to RabbitQM closed!");
       $.logger.debug(err);
@@ -78,7 +78,9 @@ function connectRabbitMQ() {
 
   try {
     amqp.connect(options, function(err, conn) {
-      if (err != null) bail(err);
+      if (err != null) {
+        $.logger.debug(err)
+      };
       console.info("connect to RabbitMQ success");
       consumer(conn);
     });
@@ -89,10 +91,10 @@ function connectRabbitMQ() {
 
 const Pool = require('worker-threads-pool');
 const pool = new Pool({
-  max: 4
+  max: 2
 })
 
-for(let i =1;i<=4;i++) {
+for (let i = 1; i <= 8; i++) {
   pool.acquire(__filename, {}, function(worker) {
     connectRabbitMQ();
     worker.on('exit', function() {
