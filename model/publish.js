@@ -3,7 +3,7 @@ let amqp = require('amqplib/callback_api');
 let express = require('express');
 let app = express();
 let http = require('http').Server(app);
-let io = require('socket.io')(http);
+// let io = require('socket.io')(http);
 let $ = require("./methods.js");
 
 app.disable('x-powered-by');
@@ -16,6 +16,9 @@ if (reg.exec(version) && RegExp.$1 >= 10) {
   cluster = require('cluster');
 }
 
+
+var port = 3131 + parseInt(process.env.NODE_APP_INSTANCE),
+  io = require('socket.io')(port);
 let options = {
   hostname: '115.159.200.179',
   port: 5672,
@@ -37,6 +40,23 @@ let info = {
 // Consumer
 function connectRabbitMQ() {
 
+  function ioSocket(msg) {
+    io.on('connection', function(socket) {
+      socket.on('disconnect', function() {
+        console.log('/: disconnect-------->')
+      });
+      socket.emit('chat message', msg.content.toString());
+    });
+
+    io.of('/ws').on('connection', function(socket) {
+        socket.on('disconnect', function() {
+          console.log('disconnect-------->')
+        });
+        socket.emit('chat message', msg.content.toString());
+      });
+  }
+
+
   function on_open(err, ch) {
     try {
       if (err != null) {
@@ -45,7 +65,8 @@ function connectRabbitMQ() {
       ch.assertQueue(queue, info);
       ch.consume(queue, function(msg) {
         if (msg !== null) {
-          io.emit('chat message', msg.content.toString());
+          //io.emit('chat message', msg.content.toString());
+          ioSocket(msg);
           ch.ack(msg);
         }
       });
@@ -89,25 +110,23 @@ function connectRabbitMQ() {
   }
 }
 
-const Pool = require('worker-threads-pool');
-const pool = new Pool({
-  max: 2
-})
-
-for (let i = 1; i <= 8; i++) {
-  pool.acquire(__filename, {}, function(worker) {
-    connectRabbitMQ();
-    worker.on('exit', function() {
-      console.log(`worker exited (pool size: ${pool.size})`)
-    })
-  })
-}
-
-http.listen(3000, function() {
-  console.info('socket.io listening on:3000'); //io接口
-});
-
-console.info(`工作进程 ${process.pid} 已启动`);
+// const Pool = require('worker-threads-pool');
+// const pool = new Pool({
+//   max: 2
+// })
+//
+// for (let i = 1; i <= 8; i++) {
+//   pool.acquire(__filename, {}, function(worker) {
+//     connectRabbitMQ();
+//     worker.on('exit', function() {
+//       console.log(`worker exited (pool size: ${pool.size})`)
+//     })
+//   })
+// }
+//
+// http.listen(3000, function() {
+//   console.info('socket.io listening on:3000'); //io接口
+// });
 
 module.exports = app;
 module.exports.connectRabbitMQ = connectRabbitMQ;

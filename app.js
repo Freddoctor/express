@@ -54,27 +54,20 @@ domain.on("error", (err) => {
   console.log(err)
 })
 
-domain.run(() => {
-  ///console.log("server start .....")
-})
-// if (publish.cluster.isMaster) {
-//   for (let i = 0; i < publish.cpuNums; i++) {
-//     publish.cluster.fork();
-//   }
-//   log.info(`主进程 ${process.pid} 正在运行`);
-//   process.on('exit', (code) => {
-//     console.log(code);
-//   });
-// } else {
-  // publish.connectRabbitMQ();
-  // var port = normalizePort(process.env.PORT || '8888');
-  // app.set('port', port);
-  // var server = http.createServer(app);
-  // server.listen(port);
-  // publish.httpSocket.listen(3000, function() {
-  //   log.warn('socket.io listening on:3000'); //io接口
-  // });
-  // server.setTimeout(0)
-  // log.info(`工作进程 ${process.pid} 已启动`);
-//}
+if (publish.cluster.isMaster) {
+  for (let i = 0; i < publish.cpuNums; i++) {
+    publish.cluster.fork();
+  }
+  log.info(`主进程 ${process.pid} 正在运行`);
+  process.on('exit', (code) => {
+    console.log(code);
+  });
+} else {
+  publish.connectRabbitMQ();
+}
+
+publish.httpSocket.listen(3000, function() {
+  log.warn('socket.io listening on:3000'); //io接口
+});
+
 module.exports = app;
